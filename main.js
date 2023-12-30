@@ -17,13 +17,10 @@ function getData(username, more) {
     xhttpr.open("GET", apiUrl, true);
     xhttpr.send();
     xhttpr.onload = () => {
+      console.log(xhttpr.status);
       if (xhttpr.status === 200) {
         const response = JSON.parse(xhttpr.response);
-        if (response["status"] == "success") {
-          parsePosts(response, more);
-        } else {
-          console.log("Error");
-        }
+        parsePosts(response, more);
       } else {
         console.log("Error");
       }
@@ -36,14 +33,14 @@ function parsePosts(data, more) {
     document.getElementById("user_posts").innerHTML = "";
   }
   document.getElementById("profile_img").src =
-    "./cors/?imgurl=" + btoa(data["imageChange"]);
-  nextTime = data["nextTimeline"];
-  if (nextTime != "nullTake") {
+    "./cors/?imgurl=" + btoa(data["profilePic"]);
+  if (data["moreAvailable"]) {
+    nextTime = data["nextId"];
     nextTimeLine = nextTime;
   }
-  innerData = data["add"];
-  const addChildrenNames = Object.keys(innerData);
-  addChildrenNames.forEach(function (post_id) {
+
+  const posts = data["posts"];
+  posts.forEach(function (post_id) {
     console.log(post_id);
     let outerDiv = document.createElement("div");
     outerDiv.className = "col-lg-4 col-md-12";
@@ -52,7 +49,7 @@ function parsePosts(data, more) {
     contentDiv.style.width = "18rem";
     let imgElement = document.createElement("img");
     imgElement.className = "card-img-top";
-    imgElement.src = "./cors/?imgurl=" + btoa(innerData[post_id]["code"]);
+    imgElement.src = "./cors/?imgurl=" + btoa([post_id]);
     let btnDiv = document.createElement("div");
     btnDiv.className = "card-body mx-auto";
     let link = document.createElement("a");
